@@ -37,6 +37,21 @@ from morphological import write_text_array
 write_text_array(structuring_element, "output/se_1.txt")
 ```
 
+## 读取灰度图片
+
+`read_grayscale_image` 将图像转换为 8 位灰度值，并返回形状为
+`(高度, 宽度)` 的二维 NumPy 数组。例如 `data/GrayscaleImg/rice.png`
+应得到形状为 `(256, 256)` 的数组。`write_grayscale_image` 可将二维数组保存为灰度图片；
+数组值必须是 0 到 255 之间的整数。
+
+```python
+from morphological import read_grayscale_image, write_grayscale_image
+
+image = read_grayscale_image("data/GrayscaleImg/rice.png")
+print(image.shape, image.dtype)
+write_grayscale_image(image, "output/rice.png")
+```
+
 ## 二值形态学运算
 
 `morphological.morphology_ops` 提供二值侵蚀、扩张、重建和凸包函数。参与运算的数组应为
@@ -65,6 +80,27 @@ for iteration, intermediate_result in reconstruction_steps(
 ):
     if iteration in (1, 5):
         print(f"Iteration {iteration}:", intermediate_result)
+```
+
+## 灰度形态学运算
+
+`morphological.grayscale_ops` 提供基于平坦结构元（非零元素作为足迹）的灰度侵蚀、扩张和阈值二值化。
+侵蚀在足迹范围内取局部最小值，扩张取局部最大值；结构元原点为中心（偶数尺寸向下取整）。
+边界外使用中性极值，不影响窗口内像素。二值化将严格大于阈值的像素置为 `1`，其余置为 `0`。
+
+```python
+import numpy as np
+
+from morphological.grayscale_ops import (
+    binarize_grayscale,
+    grayscale_dilations,
+    grayscale_erosions,
+)
+
+flat_se = np.ones((3, 3), dtype=np.uint8)
+eroded = grayscale_erosions(image, flat_se)
+dilated = grayscale_dilations(image, flat_se)
+binary = binarize_grayscale(image, threshold=128)
 ```
 
 ## 绘制二值图像

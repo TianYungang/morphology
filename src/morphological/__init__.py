@@ -11,6 +11,12 @@ from pathlib import Path
 import numpy as np
 
 from .array_txt_io import read_text_array, write_text_array
+from .grayscale_image_io import read_grayscale_image, write_grayscale_image
+from .grayscale_ops import (
+    binarize_grayscale,
+    grayscale_dilations,
+    grayscale_erosions,
+)
 from .morphology_ops import (
     convex_hull,
     erosions,
@@ -128,7 +134,16 @@ def main() -> None:
 
 
 
-__all__ = ["main", "read_text_array", "write_text_array"]
+__all__ = [
+    "main",
+    "binarize_grayscale",
+    "grayscale_dilations",
+    "grayscale_erosions",
+    "read_grayscale_image",
+    "read_text_array",
+    "write_grayscale_image",
+    "write_text_array",
+]
 
 
 if __name__ == "__main__":
