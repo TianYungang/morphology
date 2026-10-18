@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700">
+<rect width="900" height="700" fill="#fff"/>
+<text x="450.00" y="92.00" text-anchor="middle" font-size="18" font-family="sans-serif">Structuring element (7 x 7)</text>
+<rect x="410.714" y="110.000" width="78.571" height="78.571" fill="#000"/>
+<rect x="253.571" y="188.571" width="392.857" height="78.571" fill="#000"/>
+<rect x="253.571" y="267.143" width="392.857" height="78.571" fill="#000"/>
+<rect x="175.000" y="345.714" width="550.000" height="78.571" fill="#000"/>
+<rect x="253.571" y="424.286" width="392.857" height="78.571" fill="#000"/>
+<rect x="253.571" y="502.857" width="392.857" height="78.571" fill="#000"/>
+<rect x="410.714" y="581.429" width="78.571" height="78.571" fill="#000"/>
+<rect x="175.000" y="110.000" width="550.000" height="550.000" fill="none" stroke="#777" stroke-width="1"/>
+</svg>

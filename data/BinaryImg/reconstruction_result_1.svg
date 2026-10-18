@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700">
+<rect width="900" height="700" fill="#fff"/>
+<text x="450.00" y="92.00" text-anchor="middle" font-size="18" font-family="sans-serif">Reconstruction result (1) (340 x 325)</text>
+<rect x="381.250" y="334.853" width="1.618" height="1.618" fill="#000"/>
+<rect x="378.015" y="336.471" width="8.088" height="1.618" fill="#000"/>
+<rect x="378.015" y="338.088" width="8.088" height="1.618" fill="#000"/>
+<rect x="376.397" y="339.706" width="11.324" height="1.618" fill="#000"/>
+<rect x="378.015" y="341.324" width="8.088" height="1.618" fill="#000"/>
+<rect x="378.015" y="342.941" width="8.088" height="1.618" fill="#000"/>
+<rect x="381.250" y="344.559" width="1.618" height="1.618" fill="#000"/>
+<rect x="187.132" y="110.000" width="525.735" height="550.000" fill="none" stroke="#777" stroke-width="1"/>
+</svg>
