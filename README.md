@@ -106,8 +106,8 @@ binary = binarize_grayscale(image, threshold=128)
 ## 绘制二值图像
 
 绘图函数接收一个二维二值数组并绘制为 SVG。文本文件可先用
-`read_text_array` 读取成数组；运行项目主函数时会直接绘制 `opening_result`。
-生成的 SVG 会尝试在默认浏览器中打开。
+`read_text_array` 读取成数组；运行项目主函数时会执行二值与灰度形态学实验，
+生成的结果文件保存在相应的 `data` 子目录中。二值实验会将结果保存为 SVG 文件，不会自动打开浏览器。
 
 ```python
 from morphological import read_text_array
@@ -118,7 +118,7 @@ draw_binary_array(image, "output/butterfly.svg", label="Butterfly")
 ```
 
 命令行默认读取 `data/BinaryImg/butterfly.txt`，也可通过 `--input` 和 `--output`
-指定输入文本文件和 SVG 输出位置。若要在代码中直接显示数组，可调用
+指定输入文本文件和 SVG 输出位置。若要在代码中保存数组图像，可调用
 `display_binary_array(array, output_path, label)`。
 
 ```powershell

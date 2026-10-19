@@ -141,6 +141,36 @@ def grayscale_dilations(
     return result
 
 
+"""灰度图像flat se开运算，先腐蚀再膨胀"""
+def openings(image: ArrayLike, structuring_element: ArrayLike) -> NDArray:
+    """Apply grayscale opening using a flat structuring element.
+
+    Opening is the composition of erosion followed by dilation.
+    """
+    eroded = grayscale_erosions(image, structuring_element)
+    return grayscale_dilations(eroded, structuring_element)
+
+
+"""灰度图像flat se闭运算，先膨胀再腐蚀"""
+def closings(image: ArrayLike, structuring_element: ArrayLike) -> NDArray:
+    """Apply grayscale closing using a flat structuring element.
+
+    Closing is the composition of dilation followed by erosion.
+    """
+    dilated = grayscale_dilations(image, structuring_element)
+    return grayscale_erosions(dilated, structuring_element)
+
+
+"""Top-Hat变换，先开运算再减去原图像"""
+def top_hat(image: ArrayLike, structuring_element: ArrayLike) -> NDArray:
+    """Apply grayscale top-hat transform using a flat structuring element.
+
+    Top-hat transform is the difference between the original image and the
+    result of the opening operation.
+    """
+    return image - openings(image, structuring_element)
+
+
 """对灰度图像进行阈值分割操作，大于阈值的置为1，小于等于的置为0，变成二值数组"""
 def binarize_grayscale(image: ArrayLike, threshold: int) -> NDArray[np.int_]:
     """Return 1 where grayscale pixels exceed threshold and 0 elsewhere."""

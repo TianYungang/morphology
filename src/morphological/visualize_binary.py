@@ -17,7 +17,6 @@ if os.path.normcase(_source_directory) not in {
 
 import argparse
 from pathlib import Path
-import webbrowser
 from xml.sax.saxutils import escape
 
 import numpy as np
@@ -39,32 +38,34 @@ def _draw_array(
     label: str,
     x: float,
     y: float,
-    max_width: float,
-    max_height: float,
 ) -> str:
     rows, columns = array.shape
-    cell_size = min(max_width / columns, max_height / rows)
-    width = columns * cell_size
-    height = rows * cell_size
-    offset_x = x + (max_width - width) / 2
     title = (
-        f'<text x="{x + max_width / 2:.2f}" y="{y - 18:.2f}" '
-        f'text-anchor="middle" font-size="18" font-family="sans-serif">'
+        f'<text x="{x + columns / 2:.2f}" y="{y - 16:.2f}" '
+        f'text-anchor="middle" font-size="14" font-family="sans-serif" '
+        f'fill="#fff" stroke="#000" stroke-width="2" '
+        f'paint-order="stroke" stroke-linejoin="round">'
         f"{escape(label)} ({rows} x {columns})</text>"
     )
-    cells = [
-        f'<rect x="{offset_x + start * cell_size:.3f}" '
-        f'y="{y + row * cell_size:.3f}" '
-        f'width="{(end - start) * cell_size:.3f}" '
-        f'height="{cell_size:.3f}" fill="#000"/>'
-        for row in range(rows)
-        for start, end in _foreground_runs(array[row])
-    ]
-    frame = (
-        f'<rect x="{offset_x:.3f}" y="{y:.3f}" width="{width:.3f}" '
-        f'height="{height:.3f}" fill="none" stroke="#777" stroke-width="1"/>'
+    foreground_paths = []
+    for row in range(rows):
+        top = y + row
+        bottom = y + row + 1
+        for start, end in _foreground_runs(array[row]):
+            left = x + start
+            right = x + end
+            foreground_paths.append(
+                f"M{left},{top}H{right}V{bottom}H{left}Z"
+            )
+
+    if not foreground_paths:
+        return title
+
+    foreground = (
+        f'<path d="{"".join(foreground_paths)}" fill="#fff" '
+        'shape-rendering="crispEdges"/>'
     )
-    return "\n".join([title, *cells, frame])
+    return "\n".join([title, foreground])
 
 
 def _foreground_runs(row: NDArray[np.int_]) -> list[tuple[int, int]]:
@@ -88,17 +89,23 @@ def draw_binary_array(
     if binary_array.size == 0:
         raise ValueError("Array must not be empty")
 
+    rows, columns = binary_array.shape
+    margin = 16
+    image_x = margin
+    image_y = 40
+    canvas_width = columns + 2 * margin
+    canvas_height = rows + image_y + margin
     svg = "\n".join(
         [
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700">',
-            '<rect width="900" height="700" fill="#fff"/>',
+            f'<svg xmlns="http://www.w3.org/2000/svg" '
+            f'width="{canvas_width}" height="{canvas_height}" '
+            f'viewBox="0 0 {canvas_width} {canvas_height}">',
+            f'<rect width="{canvas_width}" height="{canvas_height}" fill="#000"/>',
             _draw_array(
                 binary_array,
                 label=label,
-                x=50,
-                y=110,
-                max_width=800,
-                max_height=550,
+                x=image_x,
+                y=image_y,
             ),
             "</svg>",
         ]
@@ -119,12 +126,8 @@ def display_binary_array(
     output_path: str | Path | None = None,
     label: str = "Binary image",
 ) -> Path:
-    """Draw one binary array and open the generated SVG in a browser."""
-    image_path = draw_binary_array(array, output_path, label).resolve()
-    if not webbrowser.open(image_path.as_uri()):
-        raise RuntimeError(f"Could not open the generated image: {image_path}")
-    print(f"Displayed binary image: {image_path}")
-    return image_path
+    """Save one binary array as an SVG image without opening it."""
+    return draw_binary_array(array, output_path, label).resolve()
 
 
 def main(array: ArrayLike | None = None, label: str | None = None) -> None:
