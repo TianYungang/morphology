@@ -16,3 +16,8 @@ venv/
 
 # IDE
 .idea/
+
+# Generated experiment images
+data/BinaryImg/*.svg
+data/GrayscaleImg/*.svg
+data/GrayscaleImg/rice_*.png
