@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+import numpy as np
+
 from morphological.array_txt_io import read_text_array
 from morphological.visualize_binary import display_binary_array
 
@@ -9,7 +11,12 @@ from morphological.grayscale_image_io import (
     read_grayscale_image,
     write_grayscale_image,
 )
-from morphological.grayscale_ops import binarize_grayscale, openings, top_hat
+from morphological.grayscale_ops import (
+    binarize_grayscale,
+    grayscale_dilations,
+    openings,
+    top_hat,
+)
 
 
 def run_grayscale_experiments() -> None:
@@ -63,6 +70,44 @@ def run_grayscale_experiments() -> None:
         "Rice top-hat opened binary image",
     )
 
+
+    """进行H-dome重建"""
+    # 计算marker 原图像-45，小于等于0取0
+    marker = np.maximum(grayscale_image.astype(np.int16) - 45, 0).astype(
+        np.uint8
+    )
+    write_grayscale_image(marker, data_dir / "rice_marker.png")
+    # 执行H-dome重建，grayscale_image作为source，marker作为marker，se_b2作为结构元
+    # 重建过程应该是 marker的膨胀操作，每次膨胀后取与source的最小值，直到不再变化为止
+    h_dome_reconstructed_image = marker.copy()
+    selected_reconstructions = {}
+    iteration = 0
+    while True:
+        iteration += 1
+        # 膨胀操作
+        dilated_image = grayscale_dilations(h_dome_reconstructed_image, se_b2)
+        # 与source取最小值
+        new_reconstructed_image = np.minimum(dilated_image, grayscale_image)
+        if iteration == 1:
+            selected_reconstructions["1"] = new_reconstructed_image.copy()
+        elif iteration == 5:
+            selected_reconstructions["5"] = new_reconstructed_image.copy()
+        # 检查是否收敛
+        if np.array_equal(new_reconstructed_image, h_dome_reconstructed_image):
+            selected_reconstructions[
+                f"last_{iteration}"
+            ] = new_reconstructed_image.copy()
+            break
+        h_dome_reconstructed_image = new_reconstructed_image
+    for suffix, reconstruction in selected_reconstructions.items():
+        write_grayscale_image(
+            reconstruction,
+            data_dir / f"rice_h_dome_reconstruction_{suffix}.png",
+        )
+    # 原图减去重建结果得到H-dome结果
+    h_dome_image = grayscale_image.astype(np.int16) - h_dome_reconstructed_image
+    # 保存H-dome重建后的图像
+    write_grayscale_image(h_dome_image, data_dir / "rice_h_dome.png")
 
 if __name__ == "__main__":
     run_grayscale_experiments()

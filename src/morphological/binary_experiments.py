@@ -6,6 +6,7 @@ import numpy as np
 
 from morphological.array_txt_io import read_text_array, write_text_array
 from morphological.morphology_ops import (
+    closings,
     convex_hull,
     complements,
     openings,
@@ -21,6 +22,7 @@ def run_binary_experiments() -> None:
     image = read_text_array(data_dir / "butterfly.txt")
     se = read_text_array(data_dir / "se_1.txt")
 
+    """原始图进行开操作"""
     opening_result = openings(image, se)
     write_text_array(opening_result, data_dir / "opening_result.txt")
     display_binary_array(image, data_dir / "butterfly.svg", "Butterfly")
@@ -31,6 +33,7 @@ def run_binary_experiments() -> None:
         "Opening result",
     )
 
+    """补集图进行开操作"""
     complement_image = complements(image)
     opening_result_complement = openings(complement_image, se)
     write_text_array(
@@ -44,7 +47,8 @@ def run_binary_experiments() -> None:
         "Opening result (complement)",
     )
 
-    closing_result = openings(complements(image), se)
+    """原始图进行闭操作"""
+    closing_result = closings(image, se)
     write_text_array(closing_result, data_dir / "closing_result.txt")
     display_binary_array(
         closing_result,
@@ -52,6 +56,33 @@ def run_binary_experiments() -> None:
         "Closing result",
     )
 
+    """原始图闭操作结果取补集"""
+    closing_result_complement = complements(closing_result)
+    write_text_array(
+        closing_result_complement,
+        data_dir / "closing_result_complement.txt",
+    )
+    display_binary_array(
+        closing_result_complement,
+        data_dir / "closing_result_complement.svg",
+        "Closing result (complement)",
+    )
+
+    """补集图闭闭操作结果取补集"""
+    closing_result_complement_complement = complements(
+        closing_result_complement
+    )
+    write_text_array(
+        closing_result_complement_complement,
+        data_dir / "closing_result_complement_complement.txt",
+    )
+    display_binary_array(
+        closing_result_complement_complement,
+        data_dir / "closing_result_complement_complement.svg",
+        "Closing result (complement) (complement)",
+    )
+
+    """重建操作"""
     marker = read_text_array(data_dir / "marker.txt")
     display_binary_array(marker, data_dir / "marker.svg", "Marker")
     reconstruction_result = reconstruction_steps(complement_image, se, marker)
@@ -78,6 +109,8 @@ def run_binary_experiments() -> None:
             f"Reconstruction result ({iteration})",
         )
 
+
+    """凸包操作"""
     convex_image = last_result.copy()
     for i in range(1, 5):
         se1 = read_text_array(data_dir / f"convex_hull_se/B{i}1.txt")
